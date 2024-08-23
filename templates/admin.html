@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+        }
+        #navbar {
+            width: 200px;
+            background-color: #f0f0f0;
+            padding-top: 20px;
+            display: none;
+        }
+        #navbar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        #navbar ul li {
+            padding: 10px;
+            text-align: center;
+        }
+        #navbar ul li a {
+            text-decoration: none;
+            color: purple;
+            display: block;
+            padding: 10px 20px;
+        }
+        #navbar ul li a:hover {
+            background-color: #ddd;
+        }
+        #navbar ul li a.selected {
+            background-color: purple;
+            color: white;
+        }
+        #main-content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+        .error-message {
+            color: red;
+            margin-bottom: 10px;
+        }
+        .app-item {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .app-item img {
+            width: 50px;
+            height: 50px;
+        }
+        .app-item .app-details {
+            flex-grow: 1;
+            padding-left: 10px;
+        }
+        .app-item .app-points {
+            background-color: #e0f7fa;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        .add-app-form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .add-app-form .form-group {
+            margin-bottom: 15px;
+        }
+        .add-app-form .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .add-app-form .form-group input[type="text"],
+        .add-app-form .form-group input[type="url"],
+        .add-app-form .form-group input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .add-app-form .form-group.parallel {
+            display: flex;
+            justify-content: space-between;
+        }
+        .add-app-form .form-group.parallel input {
+            width: 48%;
+        }
+        .add-app-form .form-group.image-upload {
+            text-align: center;
+        }
+        .add-app-form .form-group.image-upload input[type="file"] {
+            display: none;
+        }
+        .add-app-form .form-group.image-upload label {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            cursor: pointer;
+        }
+        .add-app-form .form-group.image-upload label:hover {
+            background-color: #ddd;
+        }
+        .add-app-form .form-group.image-upload img {
+            max-width: 100px;
+            max-height: 100px;
+            display: block;
+            margin: 0 auto 10px;
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar">
+        <ul>
+            <li><a href="#" id="home-link" class="selected">Home</a></li>
+            <li><a href="#" id="add-app-link">Add App</a></li>
+            <li><a href="#" id="logout-link">Logout</a></li>
+        </ul>
+    </div>
+
+    <div id="main-content">
+        <div id="login-form" style="width: 300px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; background-color: #f9f9f9; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            <h2 style="text-align: center; color: #333;">Login</h2>
+            <form id="admin-login-form">
+                <label for="username" style="display: block; margin-bottom: 8px; color: #555;">Username:</label>
+                <input type="text" id="username" name="username" required style="width: 100%; padding: 8px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 4px;">
+                <label for="password" style="display: block; margin-bottom: 8px; color: #555;">Password:</label>
+                <input type="password" id="password" name="password" required style="width: 100%; padding: 8px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 4px;">
+                <button type="submit" style="width: 100%; padding: 10px; background-color: purple; color: white; border: none; border-radius: 4px; cursor: pointer;">Login</button>
+            </form>
+        </div>
+
+        <div id="admin-panel" style="display:none;">
+            <div id="app-list-section">
+                <h2>App List</h2>
+                <div id="app-list"></div>
+            </div>
+
+            <div id="add-app-section" style="display:none;">
+                <h2>Add App</h2>
+                <form id="add-app-form" class="add-app-form">
+                    <div class="form-group image-upload">
+                        <label for="app_icon">
+                            <img id="app-icon-preview" src="" alt="App Icon Preview" style="display:none;">
+                            <span>Upload App Icon</span>
+                        </label>
+                        <input type="file" id="app_icon" name="app_icon" required>
+                    </div>
+                    <div class="form-group parallel">
+                        <div>
+                            <label for="name">Name:</label>
+                            <input type="text" id="name" name="name" required>
+                        </div>
+                        <div>
+                            <label for="app_link">App Link:</label>
+                            <input type="url" id="app_link" name="app_link" required>
+                        </div>
+                    </div>
+                    <div class="form-group parallel">
+                        <div>
+                            <label for="category">Category:</label>
+                            <input type="text" id="category" name="category" required>
+                        </div>
+                        <div>
+                            <label for="sub_category">Sub Category:</label>
+                            <input type="text" id="sub_category" name="sub_category" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="points">Points:</label>
+                        <input type="number" id="points" name="points" required>
+                    </div>
+                    <button type="submit">Add App</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(async () => {
+    const refreshToken = localStorage.getItem("refresh_token");
+    if (refreshToken) {
+        try {
+            const response = await fetch("/token/refresh/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ refresh: refreshToken }),
+            });
+            const data = await response.json();
+            const accessToken = data.access;
+            localStorage.setItem("access_token", accessToken);
+
+            $('#login-form').hide();
+            $('#navbar').show();
+            $('#admin-panel').show();
+            $('#home-link').click();
+        } catch (error) {
+            $('#login-form').show();
+            $('#navbar').hide();
+            $('#admin-panel').hide();
+            $('#home-link').click();
+            console.error("Error refreshing token:", error);
+        }
+    } else {
+        $('#login-form').show();
+        $('#navbar').hide();
+        $('#admin-panel').hide();
+        $('#home-link').click();
+    }
+});
+
+        $(document).ready(function() {
+            $('#admin-login-form').on('submit', function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '/admin-login/',
+                    type: 'POST',
+                    data: new FormData(this),
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        localStorage.setItem('access_token', response.access);
+                        localStorage.setItem('refresh_token', response.refresh);
+                        $('#login-form').hide();
+                        $('#navbar').show();
+                        $('#admin-panel').show();
+                        $('#home-link').click();
+                    },
+                    error: function(response) {
+
+                        alert(response.responseJSON.non_field_errors[0]);
+                    }
+                });
+            });
+
+            $('#add-app-form').on('submit', function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '/app/create/',
+                    type: 'POST',
+                    data: new FormData(this),
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+                    },
+                    success: function(response) {
+                        alert('App added successfully');
+                        loadAppList();
+                    },
+                    error: function(response) {
+                        alert('Failed to add app');
+                    }
+                });
+            });
+
+            $('#home-link').click(function() {
+                $('#add-app-section').hide();
+                $('#app-list-section').show();
+                loadAppList();
+                updateSelectedTab($(this));
+            });
+
+            $('#add-app-link').click(function() {
+                $('#app-list-section').hide();
+                $('#add-app-section').show();
+                updateSelectedTab($(this));
+            });
+
+            $('#logout-link').click(function() {
+                localStorage.removeItem('access_token');
+                localStorage.removeItem('refresh_token');
+                $('#login-form').show();
+                $('#navbar').hide();
+                $('#admin-panel').hide();
+                $('#home-link').click();
+            });
+
+            $('#app_icon').change(function() {
+                var file = this.files[0];
+                if (file) {
+                    var reader = new FileReader();
+                    reader.onload = function(e) {
+                        $('#app-icon-preview').attr('src', e.target.result).show();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            function loadAppList() {
+                $.ajax({
+                    url: '/apps-list/',
+                    type: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+                    },
+                    success: function(response) {
+                        var appList = $('#app-list');
+                        appList.empty();
+                        response.forEach(function(app) {
+                            var appItem = $('<div class="app-item"></div>');
+                            appItem.append('<img src="' + app.app_icon + '" alt="' + app.name + '">');
+                            appItem.append('<div class="app-details"><strong>' + app.name + '</strong><br><a href="' + app.app_link + '" target="_blank">App Link</a></div>');
+                            appItem.append('<div class="app-points">' + app.points + ' Points</div>');
+                            appList.append(appItem);
+                        });
+                    },
+                    error: function(response) {
+                        console.error('Failed to load app list');
+                    }
+                });
+            }
+
+            function updateSelectedTab(selectedTab) {
+                $('#navbar ul li a').removeClass('selected');
+                selectedTab.addClass('selected');
+            }
+        });
+    </script>
+</body>
+</html>

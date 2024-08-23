@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Panel</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+        }
+        #navbar {
+            width: 200px;
+            background-color: #f0f0f0;
+            padding-top: 20px;
+            display: none;
+        }
+        #navbar ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        #navbar ul li {
+            padding: 10px;
+            text-align: center;
+        }
+        #navbar ul li a {
+            text-decoration: none;
+            color: purple;
+            display: block;
+            padding: 10px 20px;
+        }
+        #navbar ul li a:hover {
+            background-color: #ddd;
+        }
+        #navbar ul li a.selected {
+            background-color: purple;
+            color: white;
+        }
+        #main-content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+        .app-item {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .app-item img {
+            width: 50px;
+            height: 50px;
+        }
+        .app-item .app-details {
+            flex-grow: 1;
+            padding-left: 10px;
+        }
+        .app-item .app-points {
+            background-color: #e0f7fa;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+        #app-list-section, #app-details, #points-section, #profile-section, #app-points-section, #completed-tasks-section {
+            display: none;
+        }
+        #upload-task-form {
+            margin-top: 20px;
+        }
+        .error-message {
+            color: red;
+            margin-bottom: 10px;
+        }
+        #drop-area {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        #drop-area.active {
+            border-color: #007bff;
+        }
+        #task-screenshot {
+            display: none;
+        }
+        .app-details-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .app-details-container img {
+            width: 50px;
+            height: 50px;
+        }
+        .app-details-container .app-details {
+            flex-grow: 1;
+            padding-left: 10px;
+        }
+        .app-details-container .app-points {
+            background-color: #e0f7fa;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="navbar">
+        <ul>
+            <li><a href="#" id="home-link" class="selected">Home</a></li>
+            <li><a href="#" id="profile-link">Profile</a></li>
+            <li><a href="#" id="points-link">Points</a></li>
+            <li><a href="#" id="task-link">Task</a></li>
+            <li><a href="#" id="logout">Logout</a></li>
+        </ul>
+    </div>
+
+    <div id="main-content">
+        <div id="login-form" style="width: 300px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; background-color: #f9f9f9; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            <h2 style="text-align: center; color: #333;">Login</h2>
+            <form id="user-login-form">
+                <label for="login-username" style="display: block; margin-bottom: 8px; color: #555;">Username:</label>
+                <input type="text" id="login-username" name="username" required style="width: 100%; padding: 8px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 4px;">
+                <label for="login-password" style="display: block; margin-bottom: 8px; color: #555;">Password:</label>
+                <input type="password" id="login-password" name="password" required style="width: 100%; padding: 8px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 4px;">
+                <button type="submit" style="width: 100%; padding: 10px; background-color: purple; color: white; border: none; border-radius: 4px; cursor: pointer;">Login</button>
+            </form>
+            <button id="show-register-form" style="width: 100%; padding: 10px; background-color: #ddd; color: #333; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px;">Register</button>
+            <div id="login-error" class="error-message" style="color: red; margin-top: 10px;"></div>
+        </div>
+
+        <div id="register-form" style="display:none; width: 300px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 10px; background-color: #f9f9f9; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+            <h2 style="text-align: center; color: #333;">Register</h2>
+            <form id="user-register-form">
+                <label for="register-username" style="display: block; margin-bottom: 8px; color: #555;">Username:</label>
+                <input type="text" id="register-username" name="username" required style="width: 100%; padding: 8px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 4px;">
+                <label for="register-email" style="display: block; margin-bottom: 8px; color: #555;">Email:</label>
+                <input type="email" id="register-email" name="email" required style="width: 100%; padding: 8px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 4px;">
+                <label for="register-password" style="display: block; margin-bottom: 8px; color: #555;">Password:</label>
+                <input type="password" id="register-password" name="password" required style="width: 100%; padding: 8px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 4px;">
+                <label for="register-password2" style="display: block; margin-bottom: 8px; color: #555;">Confirm Password:</label>
+                <input type="password" id="register-password2" name="password2" required style="width: 100%; padding: 8px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 4px;">
+                <label for="register-profile-image" style="display: block; margin-bottom: 8px; color: #555;">Profile Image:</label>
+                <input type="file" id="register-profile-image" name="profile_image" style="width: 100%; padding: 8px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 4px;">
+                <button type="submit" style="width: 100%; padding: 10px; background-color: purple; color: white; border: none; border-radius: 4px; cursor: pointer;">Register</button>
+            </form>
+            <button id="show-login-form" style="width: 100%; padding: 10px; background-color: #ddd; color: #333; border: none; border-radius: 4px; cursor: pointer; margin-top: 10px;">Back to Login</button>
+            <div id="register-error" class="error-message" style="color: red; margin-top: 10px;"></div>
+        </div>
+
+        <div id="user-panel" style="display:none;">
+            <div id="app-list-section">
+                <h2>App List</h2>
+                <div id="app-list"></div>
+            </div>
+
+            <div id="app-details">
+                <h2>App Details</h2>
+                <div id="selected-app-details" class="app-details-container">
+                    <img id="app-image" src="" alt="App Image" style="display:none;" width="50">
+                    <div class="app-details">
+                        <p><strong>Name: </strong><span id="app-name"></span></p>
+                        <p><strong>URL: </strong><a id="app-url" href="#" target="_blank">App URL</a></p>
+                    </div>
+                    <div class="app-points" id="app-points"></div>
+                </div>
+                <form id="upload-task-form">
+                    <input type="hidden" id="app-id" name="app">
+                    <label for="task-screenshot">Upload Screenshot:</label>
+                    <div id="drop-area">
+                        <p>Drag and drop your screenshot here, or click to select a file.</p>
+                        <input type="file" id="task-screenshot" name="screenshot" required>
+                    </div>
+                    <label for="task-points" hidden>Points:</label>
+                    <input type="number" id="task-points" name="points" required readonly hidden><br>
+                    <button type="submit">Upload</button>
+                </form>
+                <div id="task-error" class="error-message"></div>
+            </div>
+
+            <div id="points-section">
+                <h2>Total Points</h2>
+                <p id="total-points"></p>
+                <div id="app-points-section"></div>
+            </div>
+
+            <div id="profile-section"></div>
+
+            <div id="completed-tasks-section">
+                <h2>Completed Tasks</h2>
+                <div id="completed-tasks-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function loadTotalPoints() {
+            $.ajax({
+                url: '/user/points/',
+                type: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+                },
+                success: function(response) {
+                    $('#total-points').text('Total Points: ' + response.total_points);
+
+                    // Display points for each app
+                    let appPointsHtml = '<h3>Points for Each App</h3><ul>';
+                    response.app_points.forEach(appPoints => {
+                        appPointsHtml += `<li><strong>${appPoints.app.name}:</strong> ${appPoints.points} Points</li>`;
+                    });
+                    appPointsHtml += '</ul>';
+                    $('#app-points-section').html(appPointsHtml);
+                },
+                error: function(response) {
+                    console.error('Failed to load total points');
+                }
+            });
+        }
+
+        function loadAppList() {
+            $.ajax({
+                url: '/apps-list/',
+                type: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+                },
+                success: function(response) {
+                    var appList = $('#app-list');
+                    appList.empty();
+                    response.forEach(function(app) {
+                        var appItem = $('<div class="app-item"></div>');
+                        appItem.append('<img src="' + app.app_icon + '" alt="' + app.name + '">');
+                        appItem.append('<div class="app-details"><strong>' + app.name + '</strong><br><a href="#" class="view-app" data-app-id="' + app.id + '">View Details</a></div>');
+                        appItem.append('<div class="app-points">' + app.points + ' Points</div>');
+                        appList.append(appItem);
+                    });
+
+                    $('.view-app').click(function(e) {
+                        e.preventDefault();
+                        var appId = $(this).data('app-id');
+                        var selectedApp = response.find(app => app.id === appId);
+                        loadAppDetails(selectedApp);
+                        $('#app-list-section').hide();
+                        $('#app-details').show();
+                    });
+                },
+                error: function(response) {
+                    console.error('Failed to load app list');
+                }
+            });
+        }
+
+        function loadAppDetails(app) {
+            $('#app-image').attr('src', app.app_icon).show();
+            $('#app-name').text(app.name);
+            $('#app-url').attr('href', app.app_link).text(app.app_link);
+            $('#task-points').val(app.points);
+            $('#app-points').text(app.points + ' Points');
+            $('#app-id').val(app.id); // Set the app ID in the hidden input field
+            console.log('App ID set to:', app.id); // Log the app ID to verify it is set correctly
+        }
+
+        function loadCompletedTasks() {
+    $.ajax({
+        url: '/completed-tasks/',
+        type: 'GET',
+        headers: {
+            'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+        },
+        success: function(response) {
+            var completedTasksList = $('#completed-tasks-list');
+            completedTasksList.empty();
+            response.forEach(function(task) {
+                var taskItem = $('<div class="app-item"></div>');
+                taskItem.append('<img src="' + task.screenshot + '" alt="' + task.app.name + '">');
+                taskItem.append('<div class="app-details"><strong>' + task.app.name + '</strong><br><p>Points: ' + task.points + '</p></div>');
+                taskItem.append('<div class="app-points">Completed</div>');
+                completedTasksList.append(taskItem);
+            });
+        },
+        error: function(response) {
+            console.error('Failed to load completed tasks');
+        }
+    });
+}
+
+        $(document).ready(async () => {
+            console.log("sss");
+            const refreshToken = localStorage.getItem("refresh_token");
+            if (refreshToken) {
+                try {
+                    const response = await fetch("/token/refresh/", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({ refresh: refreshToken }),
+                    });
+                    const data = await response.json();
+                    console.log(data);
+                    const accessToken = data.access;
+                    localStorage.setItem("access_token", accessToken);
+
+                    $('#login-form').hide();
+                    $('#navbar').show();
+                    $('#user-panel').show();
+                    $('#app-list-section').show();
+                    loadAppList();
+                    loadTotalPoints();
+                } catch (error) {
+                    $('#login-form').show();
+                    $('#navbar').hide();
+                    $('#user-panel').hide();
+                    $('#app-list-section').hide();
+                    console.error("Error refreshing token:", error);
+                }
+            } else {
+                $('#login-form').show();
+                $('#navbar').hide();
+                $('#user-panel').hide();
+                $('#app-list-section').hide();
+            }
+        });
+
+        $(document).ready(function() {
+            $('#show-register-form').click(function() {
+                $('#login-form').hide();
+                $('#register-form').show();
+            });
+
+            $('#show-login-form').click(function() {
+                $('#register-form').hide();
+                $('#login-form').show();
+            });
+
+            $('#user-login-form').on('submit', function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '/user-login/',
+                    type: 'POST',
+                    data: new FormData(this),
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        localStorage.setItem('access_token', response.access);
+                        localStorage.setItem('refresh_token', response.refresh);
+                        console.log(response);
+                        $('#login-form').hide();
+                        $('#navbar').show();
+                        $('#user-panel').show();
+                        $('#app-list-section').show();
+                        loadAppList();
+                        loadTotalPoints();
+                    },
+                    error: function(response) {
+                        $('#login-error').text(response.responseJSON.non_field_errors[0] || 'Login failed');
+                    }
+                });
+            });
+
+            $('#user-register-form').on('submit', function(e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '/register/',
+                    type: 'POST',
+                    data: new FormData(this),
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        alert('Registration successful');
+                        $('#register-form').hide();
+                        $('#login-form').show();
+                    },
+                    error: function(response) {
+                        $('#register-error').text(response.responseJSON.non_field_errors[0] || 'Registration failed');
+                    }
+                });
+            });
+
+            $('#upload-task-form').on('submit', function(e) {
+                e.preventDefault();
+                var formData = new FormData(this);
+                if ($('#task-screenshot')[0].files.length > 0) {
+                    formData.append('completed', true);
+                }
+                // Log the form data to verify the app field is included
+                for (let pair of formData.entries()) {
+                    console.log(pair[0] + ', ' + pair[1]);
+                }
+                $.ajax({
+                    url: '/task/upload/',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+                    },
+                    success: function(response) {
+                        alert('Task uploaded successfully');
+                    },
+                    error: function(response) {
+                        console.error('Task upload failed:', response);
+                        $('#task-error').text(response.responseJSON.non_field_errors[0] || 'Failed to upload task');
+                    }
+                });
+            });
+
+            $('#home-link').click(function() {
+                $('#app-list-section').show();
+                $('#app-details').hide();
+                $('#points-section').hide();
+                $('#profile-section').hide();
+                $('#completed-tasks-section').hide();
+                updateSelectedTab($(this));
+            });
+
+            $('#profile-link').click(function() {
+                loadProfile();
+                $('#app-list-section').hide();
+                $('#app-details').hide();
+                $('#points-section').hide();
+                $('#profile-section').show();
+                $('#completed-tasks-section').hide();
+                updateSelectedTab($(this));
+            });
+
+            $('#points-link').click(function() {
+                loadTotalPoints();
+                $('#app-list-section').hide();
+                $('#app-details').hide();
+                $('#points-section').show();
+                $('#profile-section').hide();
+                $('#completed-tasks-section').hide();
+                updateSelectedTab($(this));
+            });
+
+            $('#task-link').click(function() {
+                loadCompletedTasks();
+                $('#app-list-section').hide();
+                $('#app-details').hide();
+                $('#points-section').hide();
+                $('#profile-section').hide();
+                $('#completed-tasks-section').show();
+                updateSelectedTab($(this));
+            });
+
+            $('#logout').click(function() {
+                localStorage.removeItem('access_token');
+                $('#navbar').hide();
+                $('#user-panel').hide();
+                $('#login-form').show();
+            });
+
+            // Drag and drop functionality
+            const dropArea = $('#drop-area');
+            const taskScreenshot = $('#task-screenshot');
+
+            dropArea.on('dragover', function(e) {
+                e.preventDefault();
+                dropArea.addClass('active');
+            });
+
+            dropArea.on('dragleave', function() {
+                dropArea.removeClass('active');
+            });
+
+            dropArea.on('drop', function(e) {
+                e.preventDefault();
+                dropArea.removeClass('active');
+                const files = e.originalEvent.dataTransfer.files;
+                if (files.length > 0) {
+                    taskScreenshot.prop('files', files);
+                }
+            });
+
+            dropArea.on('click', function() {
+                taskScreenshot.click();
+            });
+
+            taskScreenshot.on('change', function() {
+                if (this.files.length > 0) {
+                    dropArea.addClass('active');
+                } else {
+                    dropArea.removeClass('active');
+                }
+            });
+
+            function loadProfile() {
+                $.ajax({
+                    url: '/user/profile/',
+                    type: 'GET',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('access_token')
+                    },
+                    success: function(response) {
+                        // Display the user profile data
+                        $('#profile-section').html(`
+                            <h2>User Profile</h2>
+                            <p><strong>Username:</strong> ${response.user.username}</p>
+                            <p><strong>Email:</strong> ${response.user.email}</p>
+                            <img src="${response.profile_image ? response.profile_image : 'default-image.png'}" alt="Profile Image" width="100">
+                        `);
+                        $('#profile-section').show();
+                    },
+                    error: function(response) {
+                        console.error('Failed to load user profile');
+                    }
+                });
+            }
+
+            function updateSelectedTab(selectedTab) {
+                $('#navbar ul li a').removeClass('selected');
+                selectedTab.addClass('selected');
+            }
+        });
+    </script>
+</body>
+</html>
