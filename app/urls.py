@@ -6,8 +6,8 @@ from django.conf.urls.static import static
 from django.conf import settings
 urlpatterns = [
 
-    path('userp/',userP,name='user-panel'),
-    path('adminp',adminP,name='admin-panel'),
+    path('user-panel/',userP,name='user-panel'),
+    path('admin-panel/',adminP,name='admin-panel'),
     path('user-login/', UserLoginView.as_view(), name='user-login'),
     path('admin-login/', AdminLoginView.as_view(), name='admin-login'),
      path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
