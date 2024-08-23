@@ -451,6 +451,7 @@
 
             $('#logout').click(function() {
                 localStorage.removeItem('access_token');
+                localStorage.removeItem('refresh_token');
                 $('#navbar').hide();
                 $('#user-panel').hide();
                 $('#login-form').show();
