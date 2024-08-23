@@ -9,11 +9,11 @@ from django.shortcuts import render
 from rest_framework.permissions import BasePermission,IsAuthenticated
 
 
-def adminP(requests):
-    return render(requests,'admin.html')
+def adminP(request):
+    return render(request,'admin.html')
 
-def userP(requests):
-    return render(requests,'user.html')
+def userP(request):
+    return render(request,'user.html')
 
 
 class IsAdminUser(BasePermission):
